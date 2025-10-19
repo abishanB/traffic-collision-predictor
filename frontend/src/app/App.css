@@ -12,7 +12,9 @@
   /* temporarily set the background color so we can tell where the map container is positioned */
   background-color: lightgrey;
 }
-
+.mapboxgl-canvas {
+  cursor: crosshair !important;
+}
 .sidebar {
   background-color: rgb(35 55 75 / 90%);
   color: #fff;
@@ -22,16 +24,6 @@
   position: absolute;
   top: 0;
   left: 0;
-  margin: 12px;
+  margin: 16px;
   border-radius: 4px;
-}
-
-.reset-button {
-  position: absolute;
-  top: 50px;
-  z-index: 1;
-  left: 12px;
-  padding: 4px 10px;
-  border-radius: 10px;
-  cursor: pointer;
 }
