@@ -3,3 +3,4 @@
 Traffic_Collisions_Open_Data_Complete.csv
 .env
 .env.local
+__pycache__/
