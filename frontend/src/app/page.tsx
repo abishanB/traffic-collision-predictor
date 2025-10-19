@@ -21,13 +21,27 @@ export default function Home() {
       zoom: 10,
     });
 
-    mapRef.current.on('click', (e) => {
-      console.log(e)
+    mapRef.current.on('click', (e: mapboxgl.MapMouseEvent) => {
+      handleMapClick(e)
     });
 
     return () => mapRef.current?.remove();
   }, []);
 
+
+  const fetchPrediction = async (lat: number, long: number) => {
+    const res = await fetch("http://127.0.0.1:8000/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lat: lat, long: long })
+    })
+    console.log(await res.json())
+  }
+    
+  const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
+    const { lat, lng } = e.lngLat;
+    fetchPrediction(lat, lng)
+  }
   return (
     <div id="map-container" ref={mapContainerRef} style={{ width: "100%", height: "100vh" }}/>
   );
