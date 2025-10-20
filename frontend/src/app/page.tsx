@@ -16,9 +16,10 @@ const MAP_BOUNDS: [[number, number], [number, number]] = [
 export default function Home() {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);  
-  const [currPrediction, setCurrPrediction] = useState<number>(0.0)
   const [center, setCenter] = useState<[number, number]>(INITIAL_CENTER)
   const [zoom, setZoom] = useState<number>(INITIAL_ZOOM)
+
+  const [currPrediction, setCurrPrediction] = useState<number>(0.0)
 
   useEffect(() => {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;

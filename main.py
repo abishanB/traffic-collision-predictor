@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-kd_model = joblib.load("./KernalDensityModel/model.pkl")
+kd_model = joblib.load("./KernalDensityModel/model.joblib")
 
 
 class InputData(BaseModel):
@@ -28,7 +28,7 @@ def root():
 
 
 @app.post("/predict/kd")
-def predict(data: InputData):
+def predict(data: InputData) -> object:
   point = np.array([[data.lat, data.long]])
   log_density = kd_model.score_samples(point)
   risk_score = np.exp(log_density)[0]
