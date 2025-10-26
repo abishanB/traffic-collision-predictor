@@ -18,8 +18,8 @@ y = df['SEVERE_COLLISION']
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.3, random_state=42)
 params = {
-    'n_estimators': list(range(5, 102, 2)),
-    'max_depth': list(range(5, 50, 2)),
+    'n_estimators': list(range(8, 22, 2)),
+    'max_depth': list(range(4, 22, 2)),
     'min_samples_split': [2],
     'min_samples_leaf': [1],
     'max_features': [None]
