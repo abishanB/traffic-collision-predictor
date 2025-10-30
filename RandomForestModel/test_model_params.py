@@ -1,31 +1,47 @@
-from sklearn.model_selection import GridSearchCV
+import pandas as pd
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import train_test_split
-import pandas as pd
-# todo switch to pipeline encoding
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
 df = pd.read_csv("./RandomForestModel/ksi_collisions.csv")
-categorical_features = ['LIGHT', 'VISIBILITY', 'ROAD_CONDITION', 'DOW', 'TIME_OF_DAY',
-                        'SEASON', 'VEHICLE_TYPE', 'DRIVER_ACTION', 'IMPACT_TYPE', 'NEIGHBOURHOOD']
-encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
-encoded_array = encoder.fit_transform(df[categorical_features])
-encoded_cols = encoder.get_feature_names_out(categorical_features)
-encoded_df = pd.DataFrame(encoded_array, columns=encoded_cols, index=df.index)
-X = encoded_df
-y = df['SEVERE_COLLISION']
+
+categorical_features = [
+    'LIGHT', 'VISIBILITY', 'ROAD_CONDITION', 'DOW', 'TIME_OF_DAY',
+    'SEASON', 'VEHICLE_TYPE', 'DRIVER_ACTION', 'IMPACT_TYPE',
+    'NEIGHBOURHOOD', 'AGE_RANGE'
+]
+target = 'SEVERE_COLLISION'
+
+X = df[categorical_features]
+y = df[target]
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42)
+    X, y, test_size=0.3, random_state=42)
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('cat', OneHotEncoder(handle_unknown='ignore',
+         sparse_output=False), categorical_features)
+    ],
+    remainder='drop'
+)
+
+pipe = Pipeline(steps=[
+    ('preprocessor', preprocessor),
+    ('classifier', RandomForestClassifier(random_state=42))
+])
+
 params = {
-    'n_estimators': list(range(8, 25, 1)),
-    'max_depth': list(range(10, 20, 1)),
-    'min_samples_split': [2],
-    'min_samples_leaf': [1],
-    'max_features': ['sqrt']
+    'classifier__n_estimators': list(range(80, 90, 5)),
+    'classifier__max_depth': list(range(24, 26, 2)),
+    'classifier__min_samples_split': [2],
+    'classifier__min_samples_leaf': [1],
+    'classifier__max_features': ['sqrt']
 }
 
-rf = RandomForestClassifier(random_state=42)
-grid = GridSearchCV(rf, params, cv=5, scoring='f1', n_jobs=-1, verbose=2)
+grid = GridSearchCV(pipe, params, cv=5, scoring='f1', n_jobs=-1, verbose=2)
 grid.fit(X_train, y_train)
 
 print("Best Params:", grid.best_params_)
