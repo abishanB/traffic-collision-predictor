@@ -2,16 +2,16 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 import joblib
 import pandas as pd
-import numpy as np
 
 router = APIRouter()
 
+# Random Forest Model for Severity Risk Prediction
 load_model_obj = joblib.load("./RandomForestModel/rf_model.joblib")
 rf_model = load_model_obj["model"]
 feature_names = load_model_obj.get("feature_names", [])
 
 
-class InputData(BaseModel):
+class Features(BaseModel):
   neighbourhood: str
   light_condition: str
   visibility: str
@@ -34,24 +34,24 @@ def classify_risk(probability: float) -> str:
     return "High Risk"
 
 
-@router.post("/predict/rf")
-def predict_severity(data: InputData) -> object:  # severity risk prediction
-  input_data = {
-    "LIGHT": [data.light_condition],
-    "VISIBILITY": [data.visibility],
-    "ROAD_CONDITION": [data.road_condition],
-    "DOW": [data.dow],
-    "TIME_OF_DAY": [data.time_of_day],
-    "SEASON": [data.season],
-    "VEHICLE_TYPE": [data.vehicle_type],
-    "DRIVER_ACTION": [data.driver_action],
-    "IMPACT_TYPE": [data.impact_type],
-    "NEIGHBOURHOOD": [data.neighbourhood],
-    "AGE_RANGE": [data.age_range]
-      }
-  input_df = pd.DataFrame(input_data)
+@router.post("/predict/severity")
+def predict_severity(features: Features) -> object:  # severity risk prediction
+  features_data = {
+    "LIGHT": [features.light_condition],
+    "VISIBILITY": [features.visibility],
+    "ROAD_CONDITION": [features.road_condition],
+    "DOW": [features.dow],
+    "TIME_OF_DAY": [features.time_of_day],
+    "SEASON": [features.season],
+    "VEHICLE_TYPE": [features.vehicle_type],
+    "DRIVER_ACTION": [features.driver_action],
+    "IMPACT_TYPE": [features.impact_type],
+    "NEIGHBOURHOOD": [features.neighbourhood],
+    "AGE_RANGE": [features.age_range]
+  }
+  features_df = pd.DataFrame(features_data)
 
-  severity_probability = rf_model.predict_proba(input_df)[0][1]
+  severity_probability = rf_model.predict_proba(features_df)[0][1]
   severity_risk_class = classify_risk(severity_probability)
   return {
     "severity_risk_score": severity_probability,

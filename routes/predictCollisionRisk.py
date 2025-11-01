@@ -5,6 +5,7 @@ import numpy as np
 
 router = APIRouter()
 
+# Kernal Density Model for Collision Risk Prediction
 load_model_obj: dict = joblib.load("./KernalDensityModel/kd_model.joblib")
 kd_model = load_model_obj["model"]
 kd_min_risk: int = load_model_obj["min_risk"]
@@ -25,7 +26,7 @@ def classify_risk(score: float) -> str:
     return "High Risk"
 
 
-@router.post("/predict/kd")
+@router.post("/predict/collision")
 def predict_kernal_density_evaluation(coords: Coordinates) -> object:
   point: np.ndarray = np.array([[coords.lat, coords.long]])
   log_density: np.ndarray = kd_model.score_samples(point)
