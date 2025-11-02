@@ -11,7 +11,7 @@ rf_model = load_model_obj["model"]
 feature_names = load_model_obj.get("feature_names", [])
 
 
-class Features(BaseModel):
+class FeaturesInput(BaseModel):
   neighbourhood: str
   light_condition: str
   visibility: str
@@ -35,24 +35,24 @@ def classify_risk(probability: float) -> str:
 
 
 @router.post("/predict/severity")
-def predict_severity(features: Features) -> object:  # severity risk prediction
-  features_data = {
-    "LIGHT": [features.light_condition],
-    "VISIBILITY": [features.visibility],
-    "ROAD_CONDITION": [features.road_condition],
-    "DOW": [features.dow],
-    "TIME_OF_DAY": [features.time_of_day],
-    "SEASON": [features.season],
-    "VEHICLE_TYPE": [features.vehicle_type],
-    "DRIVER_ACTION": [features.driver_action],
-    "IMPACT_TYPE": [features.impact_type],
-    "NEIGHBOURHOOD": [features.neighbourhood],
-    "AGE_RANGE": [features.age_range]
+def predict_severity(featuresInput: FeaturesInput) -> object:  # severity risk prediction
+  features_data: dict = {
+    "LIGHT": [featuresInput.light_condition],
+    "VISIBILITY": [featuresInput.visibility],
+    "ROAD_CONDITION": [featuresInput.road_condition],
+    "DOW": [featuresInput.dow],
+    "TIME_OF_DAY": [featuresInput.time_of_day],
+    "SEASON": [featuresInput.season],
+    "VEHICLE_TYPE": [featuresInput.vehicle_type],
+    "DRIVER_ACTION": [featuresInput.driver_action],
+    "IMPACT_TYPE": [featuresInput.impact_type],
+    "NEIGHBOURHOOD": [featuresInput.neighbourhood],
+    "AGE_RANGE": [featuresInput.age_range]
   }
-  features_df = pd.DataFrame(features_data)
+  features_df: pd.DataFrame = pd.DataFrame(features_data)
 
-  severity_probability = rf_model.predict_proba(features_df)[0][1]
-  severity_risk_class = classify_risk(severity_probability)
+  severity_probability: float = rf_model.predict_proba(features_df)[0][1]
+  severity_risk_class: str = classify_risk(severity_probability)
   return {
     "severity_risk_score": severity_probability,
     "severity_risk_class": severity_risk_class

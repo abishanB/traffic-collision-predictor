@@ -48,10 +48,11 @@ def find_neighbourhood_by_coords(lat: float, lon: float) -> tuple[str, int]:
 
 @router.post("/neighbourhood")
 def get_neighbourhood(coords: Coordinates) -> object:
-  name, number = find_neighbourhood_by_coords(coords.lat, coords.long)
+  hood_name, hood_number = find_neighbourhood_by_coords(
+    coords.lat, coords.long)
   return {
-      "neighbourhood_name": name,
-      "neighbourhood_number": number,
+      "neighbourhood_name": hood_name,
+      "neighbourhood_number": hood_number,
       "lat": coords.lat,
       "long": coords.long
   }
